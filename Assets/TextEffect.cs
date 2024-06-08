@@ -2,14 +2,14 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.EventSystems;
 
+[RequireComponent(typeof(TMP_Text))]
 public class TextEffect : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
-
 {
     enum TextSituation
     {
         AnimationActived = 0,
-        AnimationInactivated =1,
-        AnimateAlways=-1
+        AnimationInactivated = 1,
+        AnimateAlways = -1
     }
     enum MoveDirection
     {
@@ -22,12 +22,11 @@ public class TextEffect : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     [SerializeField] TextSituation situation = TextSituation.AnimationInactivated;
     [SerializeField] MoveDirection direction = MoveDirection.Left;
     [Tooltip("When pointer exit UI reset text position")]
-    [SerializeField] bool resetText =true;
+    [SerializeField] bool resetText = true;
     [Tooltip("Text move speed (perChar/second)")]
     [Range(0.01f, 1)]
     [SerializeField] float moveTimer = 0.25f;
     float timer;
-
     void Awake()
     {
         _Text = GetComponent<TMP_Text>();
@@ -51,9 +50,9 @@ public class TextEffect : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
             switch (direction)
             {
                 case MoveDirection.Right:
-                    newText = textCash[..(textCash.Length-1)];
+                    newText = textCash[..(textCash.Length - 1)];
                     textTemp = textCash[^1];
-                    textCash = textTemp+ newText;
+                    textCash = textTemp + newText;
                     _Text.text = textCash;
                     break;
                 case MoveDirection.Left:
@@ -78,16 +77,24 @@ public class TextEffect : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
 
     public void OnPointerEnter(PointerEventData eventData)
     {
+        if (situation is (TextSituation)(-1))
+        {
+            return;
+        }
         SwitchSituation(0);
     }
-
     public void OnPointerExit(PointerEventData eventData)
     {
+        if (situation is (TextSituation)(-1))
+        {
+            return;
+        }
         SwitchSituation(1);
         if (resetText)
         {
             textCash = oringeText + "            ";
         }
         _Text.text = oringeText;
+        timer = 0;
     }
 }
